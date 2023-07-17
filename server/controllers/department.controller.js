@@ -7,6 +7,7 @@ const Course = require("../models/courses.model");
 const jwt = require("jsonwebtoken");
 require("dotenv").config;
 
+//
 async function createDepartmentRecords(req, res) {
   try {
     // Clear existing department records
