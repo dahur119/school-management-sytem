@@ -20,9 +20,11 @@
     "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.3.0",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "school-management": "file:.."
   },
   "devDependencies": {
-    "jest": "^29.5.0"
+    "jest": "^29.5.0",
+    "supertest": "^6.3.3"
   }
 }
