@@ -2,7 +2,6 @@ const express = require("express");
 const lectureRouter = require("./lecture.routes");
 const studentRouter = require("./student.routes");
 const departmentRouter = require("./department.routes");
-const request = require("supertest");
 
 const api = express.Router();
 

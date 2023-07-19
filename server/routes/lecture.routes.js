@@ -9,6 +9,7 @@ const {
   allStudent,
   lecturerLogout,
   LecturerViewResult,
+  getStudentIdCourses,
 } = require("../controllers/lecture.controller");
 const verifyJWT = require("../middleware/verifyJwt");
 
@@ -22,5 +23,6 @@ lectureRouter.get("/all-student", allStudent);
 lectureRouter.get("/all-courses", allCourse);
 lectureRouter.post("/submit", verifyJWT, submitResult);
 lectureRouter.put("/update", verifyJWT, updateResult);
+lectureRouter.get("/:studentId/courses", getStudentIdCourses);
 
 module.exports = lectureRouter;

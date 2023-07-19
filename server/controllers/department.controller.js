@@ -7,7 +7,6 @@ const Course = require("../models/courses.model");
 const jwt = require("jsonwebtoken");
 require("dotenv").config;
 
-//
 async function createDepartmentRecords(req, res) {
   try {
     // Clear existing department records
@@ -187,6 +186,7 @@ async function getAllDepartments(req, res) {
     res.status(500).json({ error: "Failed to retrieve department names" });
   }
 }
+
 const getAllStudentResults = async (req, res) => {
   try {
     const { authorization } = req.headers;
@@ -201,7 +201,6 @@ const getAllStudentResults = async (req, res) => {
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     const departmentId = decodedToken._id;
-    console.log(departmentId);
     if (!departmentId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -330,12 +329,11 @@ async function getAllLecturer(req, res) {
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     const departmentId = decodedToken._id;
+    console.log(departmentId);
 
     const lecturer = await Lecturer.find({ department: departmentId })
       .populate("department", "name")
       .select("username name password");
-
-    console.log("yes i'm checking ", lecturer);
 
     if (lecturer.length === 0) {
       return res.status(404).json({
@@ -348,6 +346,19 @@ async function getAllLecturer(req, res) {
     res.status(500).json({
       message: "Internal server error",
     });
+  }
+}
+
+async function getStudentIdCourses(req, res) {
+  try {
+    const { studentId } = req.params;
+
+    const studentCourses = await Course.find({ lecturer: studentId });
+
+    res.status(200).json(studentCourses);
+  } catch (error) {
+    console.error("Error retrieving student courses:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 }
 

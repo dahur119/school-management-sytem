@@ -140,16 +140,16 @@ async function submitResult(req, res) {
     const lecturerId = decodedToken.lecturerId;
     const { studentId, courseId, score } = req.body;
 
-    console.log("checker", lecturerId);
-
     const lecturer = await Lecturer.findById(lecturerId);
+    console.log("checkme good", lecturer);
     if (!lecturer) {
       return res.status(404).json({
         message: "Lecturer not found.",
       });
     }
 
-    const department = await Department.findById(lecturer.department);
+    const department = lecturer.department;
+    console.log("checking", department);
     if (!department) {
       return res.status(404).json({
         message: "Department not found.",
@@ -163,9 +163,21 @@ async function submitResult(req, res) {
       });
     }
 
-    if (!student.course.includes(courseId)) {
+    if (!student || !student.course || !student.course.includes(courseId)) {
       return res.status(404).json({
         message: "Student is not registered for the course.",
+      });
+    }
+
+    const existingResult = await Result.findOne({
+      student: studentId,
+      course: courseId,
+      score: score,
+    });
+
+    if (existingResult) {
+      return res.status(400).json({
+        message: "Result already exists for this student, course, and score.",
       });
     }
 
@@ -176,13 +188,30 @@ async function submitResult(req, res) {
       approved: false,
       approvedBy: department._id, // Set the approvedBy field with the department ID
     });
+    console.log("i need you", result);
     await result.save();
 
     lecturer.results.push(result._id);
     await lecturer.save();
 
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return res.status(404).json({
+        message: "Course not found.",
+      });
+    }
+
+    const studentDetails = {
+      studentId: student._id,
+      studentName: student.name,
+      courseId: course._id,
+      courseName: course.courseName,
+    };
+    console.log(studentDetails);
+
     res.status(200).json({
       message: "Result submitted successfully.",
+      student: studentDetails,
     });
   } catch (error) {
     console.log(error);
@@ -194,6 +223,20 @@ async function submitResult(req, res) {
     res.status(500).json({
       message: "An error occurred while submitting the result.",
     });
+  }
+}
+
+async function getStudentIdCourses(req, res) {
+  try {
+    const { studentId } = req.params;
+
+    const studentCourses = await Course.find({ student: studentId });
+    console.log("sick", studentCourses);
+
+    res.status(200).json(studentCourses);
+  } catch (error) {
+    console.error("Error retrieving student courses:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 }
 
@@ -303,4 +346,5 @@ module.exports = {
   allStudent,
   LecturerViewResult,
   lecturerLogout,
+  getStudentIdCourses,
 };
