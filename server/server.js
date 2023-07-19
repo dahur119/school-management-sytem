@@ -12,6 +12,8 @@ mongoose.connection.once("open", () => {
   console.log("MongoDb connection is ready");
 });
 
+// hello
+
 mongoose.connection.on("error", (err) => {
   console.error(err);
 });
